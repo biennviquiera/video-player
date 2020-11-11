@@ -1,9 +1,9 @@
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QHBoxLayout, QVBoxLayout, QLabel, \
-    QSlider, QStyle, QSizePolicy, QFileDialog
+    QSlider, QStyle, QSizePolicy, QFileDialog, QShortcut
 import sys
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
 from PyQt5.QtMultimediaWidgets import QVideoWidget
-from PyQt5.QtGui import QIcon, QPalette
+from PyQt5.QtGui import QIcon, QPalette, QKeySequence
 from PyQt5.QtCore import Qt, QUrl
 
 
@@ -13,7 +13,7 @@ class Window(QWidget):
 
         self.setWindowTitle("PyQt5 Media Player")
         self.setGeometry(350, 100, 700, 500)
-        self.setWindowIcon(QIcon('player.png'))
+        self.setWindowIcon(QIcon('helicopter.jpg'))
 
         p = self.palette()
         p.setColor(QPalette.Window, Qt.black)
@@ -41,14 +41,28 @@ class Window(QWidget):
         self.playBtn.setEnabled(False)
         self.playBtn.setIcon(self.style().standardIcon(QStyle.SP_MediaPlay))
         self.playBtn.clicked.connect(self.play_video)
+        self.playBtnShortcut = QShortcut(QKeySequence('Space'), self)
+        self.playBtnShortcut.activated.connect(self.play_video)
 
-        #create skip forward button
+        # create skip forward button
         self.skipForward = QPushButton()
         self.skipForward.setIcon(self.style().standardIcon(QStyle.SP_MediaSeekForward))
+        self.skipForward.setEnabled(False)
+        self.skipForward.clicked.connect(self.skip_forward)
+        self.forwardShortcut = QShortcut(QKeySequence('Right'), self)
+        self.forwardShortcut.activated.connect(self.skip_forward)
+        self.forwardShortcut = QShortcut(QKeySequence('Shift+Right'), self)
+        self.forwardShortcut.activated.connect(self.skip_forward_tiny)
 
-        #create skip backward button
+        # create skip backward button
         self.skipBackwards = QPushButton()
         self.skipBackwards.setIcon(self.style().standardIcon(QStyle.SP_MediaSeekBackward))
+        self.skipBackwards.setEnabled(False)
+        self.skipBackwards.clicked.connect(self.skip_backwards)
+        self.backwardsShortcut = QShortcut(QKeySequence('Left'), self)
+        self.backwardsShortcut.activated.connect(self.skip_backwards)
+        self.backwardsShortcutTiny = QShortcut(QKeySequence('Shift+Left'), self)
+        self.backwardsShortcutTiny.activated.connect(self.skip_backwards_tiny)
 
         # create slider
         self.slider = QSlider(Qt.Horizontal)
@@ -92,6 +106,8 @@ class Window(QWidget):
         if filename != '':
             self.mediaPlayer.setMedia(QMediaContent(QUrl.fromLocalFile(filename)))
             self.playBtn.setEnabled(True)
+            self.skipForward.setEnabled(True)
+            self.skipBackwards.setEnabled(True)
 
     def play_video(self):
         if self.mediaPlayer.state() == QMediaPlayer.PlayingState:
@@ -99,6 +115,24 @@ class Window(QWidget):
 
         else:
             self.mediaPlayer.play()
+
+    def skip_forward(self):
+        if self.mediaPlayer.state() == QMediaPlayer.PlayingState:
+            self.mediaPlayer.setPosition(self.mediaPlayer.position() + 5000)
+        else:
+            self.mediaPlayer.setPosition(self.mediaPlayer.position() + 33)
+
+    def skip_forward_tiny(self):
+        self.mediaPlayer.setPosition(self.mediaPlayer.position() + 1000)
+
+    def skip_backwards(self):
+        if self.mediaPlayer.state() == QMediaPlayer.PlayingState:
+            self.mediaPlayer.setPosition(self.mediaPlayer.position() - 5000)
+        else:
+            self.mediaPlayer.setPosition(self.mediaPlayer.position() - 33)
+
+    def skip_backwards_tiny(self):
+        self.mediaPlayer.setPosition(self.mediaPlayer.position() - 1000)
 
     def mediastate_changed(self, state):
         if self.mediaPlayer.state() == QMediaPlayer.PlayingState:
