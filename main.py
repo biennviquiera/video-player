@@ -42,6 +42,14 @@ class Window(QWidget):
         self.playBtn.setIcon(self.style().standardIcon(QStyle.SP_MediaPlay))
         self.playBtn.clicked.connect(self.play_video)
 
+        #create skip forward button
+        self.skipForward = QPushButton()
+        self.skipForward.setIcon(self.style().standardIcon(QStyle.SP_MediaSeekForward))
+
+        #create skip backward button
+        self.skipBackwards = QPushButton()
+        self.skipBackwards.setIcon(self.style().standardIcon(QStyle.SP_MediaSeekBackward))
+
         # create slider
         self.slider = QSlider(Qt.Horizontal)
         self.slider.setRange(0, 0)
@@ -58,6 +66,8 @@ class Window(QWidget):
         # set widgets to the hbox layout
         hboxLayout.addWidget(openBtn)
         hboxLayout.addWidget(self.playBtn)
+        hboxLayout.addWidget(self.skipBackwards)
+        hboxLayout.addWidget(self.skipForward)
         hboxLayout.addWidget(self.slider)
 
         # create vbox layout
